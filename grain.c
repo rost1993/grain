@@ -154,8 +154,8 @@ grain_set_key_and_iv(struct grain_context *ctx, const uint8_t *key, const int ke
 void
 grain_encrypt(struct grain_context *ctx, const uint8_t *buf, uint32_t buflen, uint8_t *out)
 {
-	uint32_t i, j;
 	uint8_t k = 0;
+	uint32_t i, j;	
 
 	for(i = 0; i < buflen; i++) {
 		k = 0;
@@ -172,5 +172,39 @@ void
 grain_decrypt(struct grain_context *ctx, const uint8_t *buf, uint32_t buflen, uint8_t *out)
 {
 	grain_encrypt(ctx, buf, buflen, out);
+}
+
+// Test vectors print
+void
+grain_test_vectors(struct grain_context *ctx)
+{
+	uint8_t keystream[16];
+	int i, j;
+
+	for(i = 0; i < 16; i++) {
+		keystream[i] = 0;
+
+		for(j = 0; j < 8; j++)
+			keystream[i] |= (grain_generate_keystream(ctx) << j);
+	}
+	
+	printf("\nTest vector for the Grain-128:\n");
+	
+	printf("\nKey:       ");
+	
+	for(i = 0; i < 16; i++)
+			printf("%02x ", ctx->key[i]);
+
+	printf("\nIV:        ");
+	
+	for(i = 0; i < 12; i++)
+		printf("%02x ", ctx->iv[i]);
+	
+	printf("\nKeystream: ");
+
+	for(i = 0; i < 16; i++)
+			printf("%02x ", keystream[i]);
+		
+	printf("\n\n");
 }
 
