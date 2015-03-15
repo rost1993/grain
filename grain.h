@@ -12,7 +12,7 @@ struct grain_context;
 struct grain_context *grain_context_new(void);
 void grain_context_free(struct grain_context **ctx);
 
-int grain_set_key_and_iv(struct grain_context *ctx, const uint8_t *key, const int keylen, const uint8_t iv[12]);
+int grain_set_key_and_iv(struct grain_context *ctx, const uint8_t *key, const int keylen, const uint8_t iv[12], const int ivlen);
 
 void grain_encrypt(struct grain_context *ctx, const uint8_t *buf, uint32_t buflen, uint8_t *out);
 void grain_decrypt(struct grain_context *ctx, const uint8_t *buf, uint32_t buflen, uint8_t *out);

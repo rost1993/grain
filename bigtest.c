@@ -114,7 +114,7 @@ main(int argc, char *argv[])
 		exit(1);
 	}
 
-	if(grain_set_key_and_iv(ctx, (uint8_t *)key, 16, iv)) {
+	if(grain_set_key_and_iv(ctx, (uint8_t *)key, 16, iv, 10)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}

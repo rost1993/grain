@@ -8,7 +8,7 @@
 
 #include "grain.h"
 
-#define BUFLEN		10000000
+#define BUFLEN		1000000
 
 // Struct for time value
 struct timeval t1, t2;
@@ -57,14 +57,14 @@ main()
 		exit(1);
 	}
 
-	if(grain_set_key_and_iv(ctx, (uint8_t *)key, 16, iv)) {
+	if(grain_set_key_and_iv(ctx, (uint8_t *)key, 16, iv, 12)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}
 
 	grain_encrypt(ctx, buf, BUFLEN, out1);
 
-	if(grain_set_key_and_iv(ctx, (uint8_t *)key, 16, iv)) {
+	if(grain_set_key_and_iv(ctx, (uint8_t *)key, 16, iv, 12)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}

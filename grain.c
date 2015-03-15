@@ -42,6 +42,7 @@
 /*
  * Grain context
  * keylen - chiper key length in bits
+ * ivlen - vector initialization length in bits
  * key - chiper key
  * iv - initialization vector
  * b - register NFSR
@@ -49,6 +50,7 @@
 */
 struct grain_context {
 	int keylen;
+	int ivlen;
 	uint8_t key[16];
 	uint8_t iv[12];
 	uint8_t b[128];
@@ -60,7 +62,7 @@ struct grain_context *
 grain_context_new(void)
 {
 	struct grain_context *ctx;
-	ctx = malloc(sizeof(*ctx));
+	ctx = (struct grain_context *)malloc(sizeof(*ctx));
 
 	if(ctx == NULL)
 		return NULL;
@@ -109,12 +111,12 @@ grain_initialization_process(struct grain_context *ctx)
 	uint8_t outbit;
 	int i;
 
-	for(i = 0; i < 96; i++) {
+	for(i = 0; i < ctx->ivlen; i++) {
 		ctx->b[i] = (ctx->key[i/8] >> (i & 0x7)) & 0x1;
 		ctx->s[i] = (ctx->iv[i/8] >> (i & 0x7)) & 0x1;
 	}
 
-	for(i = 96; i < ctx->keylen; i++) {
+	for(i = ctx->ivlen; i < ctx->keylen; i++) {
 		ctx->b[i] = (ctx->key[i/8] >> (i & 0x7)) & 0x1;
 		ctx->s[i] = 0x1;
 	}
@@ -129,10 +131,15 @@ grain_initialization_process(struct grain_context *ctx)
 // Fill the grain_context (key adn iv)
 // Return value: 0 (if all is well), -1 (is all bad)
 int
-grain_set_key_and_iv(struct grain_context *ctx, const uint8_t *key, const int keylen, const uint8_t iv[12])
+grain_set_key_and_iv(struct grain_context *ctx, const uint8_t *key, const int keylen, const uint8_t iv[12], const int ivlen)
 {
 	if((keylen <= GRAIN) && (keylen > 0))
 		ctx->keylen = keylen * 8;
+	else
+		return -1;
+	
+	if((ivlen > 0) && (ivlen <= 12))
+		ctx->ivlen = ivlen * 8;
 	else
 		return -1;
 	
