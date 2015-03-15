@@ -33,14 +33,21 @@ main(void)
 		exit(1);
 	}
 
-	if(grain_set_key_and_iv(ctx, key1, 16, iv1)) {
+	if(grain_set_key_and_iv(ctx, key1, 16, iv1, 12)) {
 		printf("Grain context filling error!\n");
 		exit(1);
 	}
 	
 	grain_test_vectors(ctx);
 
-	if(grain_set_key_and_iv(ctx, key2, 16, iv2)) {
+	grain_context_free(&ctx);
+
+	if((ctx = grain_context_new()) == NULL) {
+		printf("Memory allocation error!\n");
+		exit(1);
+	}
+
+	if(grain_set_key_and_iv(ctx, key2, 16, iv2, 12)) {
 		printf("Grain context filling error!\n");
 		exit(1);
 	}
