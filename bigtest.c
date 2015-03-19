@@ -1,4 +1,5 @@
-/* Big test grain.h
+/* 
+ * Big test grain.h
  * Example: 
  * encrypt - ./bigtest -t 1 -b 1000000 -i file1 -o file2
  * decrypt - ./bigtest -t 2 -b 1000000 -i file2 -o file3
@@ -65,7 +66,7 @@ int
 main(int argc, char *argv[])
 {
 	FILE *fp, *fd;
-	struct grain_context *ctx;
+	struct grain_context ctx;
 	uint32_t byte, block = 10000;
 	uint8_t *buf, *out, key[16], iv[12];
 	char file1[MAX_FILE], file2[MAX_FILE];
@@ -109,26 +110,21 @@ main(int argc, char *argv[])
 	memset(key, 'k', sizeof(key));
 	memset(iv, 'i', sizeof(iv));
 
-	if((ctx = grain_context_new()) == NULL) {
-		printf("Memory allocation error!\n");
-		exit(1);
-	}
+	grain_init(&ctx);
 
-	if(grain_set_key_and_iv(ctx, (uint8_t *)key, 16, iv, 10)) {
+	if(grain_set_key_and_iv(&ctx, (uint8_t *)key, 16, iv, 10)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}
 	
 	while((byte = fread(buf, 1, block, fp)) > 0) {
 		if(action == 1)
-			grain_encrypt(ctx, buf, byte, out);
+			grain_encrypt(&ctx, buf, byte, out);
 		else
-			grain_decrypt(ctx, buf, byte, out);
+			grain_decrypt(&ctx, buf, byte, out);
 		
 		fwrite(out, 1, byte, fd);
 	}
-	
-	grain_context_free(&ctx);
 	
 	free(buf);
 	free(out);

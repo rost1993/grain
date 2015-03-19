@@ -8,7 +8,7 @@
 
 #include "grain.h"
 
-#define BUFLEN		1000000
+#define BUFLEN		10000000
 
 // Struct for time value
 struct timeval t1, t2;
@@ -42,9 +42,9 @@ time_stop(void)
 }
 
 int
-main()
+main(void)
 {
-	struct grain_context *ctx;
+	struct grain_context ctx;
 
 	memset(buf, 'q', sizeof(buf));
 	memset(key, 'k', sizeof(key));
@@ -52,26 +52,23 @@ main()
 
 	time_start();
 
-	if((ctx = grain_context_new()) == NULL) {
-		printf("Memory allocation error!\n");
-		exit(1);
-	}
+	grain_init(&ctx);
 
-	if(grain_set_key_and_iv(ctx, (uint8_t *)key, 16, iv, 12)) {
+	if(grain_set_key_and_iv(&ctx, (uint8_t *)key, 16, iv, 12)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}
 
-	grain_encrypt(ctx, buf, BUFLEN, out1);
+	grain_encrypt(&ctx, buf, BUFLEN, out1);
 
-	if(grain_set_key_and_iv(ctx, (uint8_t *)key, 16, iv, 12)) {
+	grain_init(&ctx);
+
+	if(grain_set_key_and_iv(&ctx, (uint8_t *)key, 16, iv, 12)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}
 
-	grain_decrypt(ctx, out1, BUFLEN, out2);
-
-	grain_context_free(&ctx);
+	grain_decrypt(&ctx, out1, BUFLEN, out2);
 
 	printf("Run time = %d\n\n", time_stop());
 
