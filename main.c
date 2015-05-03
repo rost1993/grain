@@ -52,23 +52,19 @@ main(void)
 
 	time_start();
 
-	grain_init(&ctx);
+	if(grain_set_key_and_iv(&ctx, (uint8_t *)key, 16, iv, 12)) {
+		printf("Mickey context filling error!\n");
+		exit(1);
+	}
+
+	grain_crypt(&ctx, buf, BUFLEN, out1);
 
 	if(grain_set_key_and_iv(&ctx, (uint8_t *)key, 16, iv, 12)) {
 		printf("Mickey context filling error!\n");
 		exit(1);
 	}
 
-	grain_encrypt(&ctx, buf, BUFLEN, out1);
-
-	grain_init(&ctx);
-
-	if(grain_set_key_and_iv(&ctx, (uint8_t *)key, 16, iv, 12)) {
-		printf("Mickey context filling error!\n");
-		exit(1);
-	}
-
-	grain_decrypt(&ctx, out1, BUFLEN, out2);
+	grain_crypt(&ctx, out1, BUFLEN, out2);
 
 	printf("Run time = %d\n\n", time_stop());
 
